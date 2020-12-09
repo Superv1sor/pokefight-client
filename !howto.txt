@@ -1,0 +1,20 @@
+// create new Projekt
+$ mkdir <projectname>
+
+// change into folder
+$ cd <projectname>
+
+// create react app in new folder "client"
+$ npx create-react-app client
+
+// change info folder
+$ cd client
+
+// open editor
+$ code .
+
+// open app in browser
+$ npm start
+
+
+$ npm i react-router-dom
