@@ -42,11 +42,28 @@ const PokemonSingle = ({ pokemon }) => {
       .then((res) => setMatchedPokemon(res));
   }, [id]);
 
+  const [poke, setPoke] = useState({ img: "" });
+  const SearchPokemon = () => {
+    Axios.get(
+      `https://pokeapi.co/api/v2/pokemon/${matchedPokemon.name.english.toLowerCase()}`
+    ).then((response) => {
+      setPoke({
+        img: response.data.sprites.front_default,
+      });
+    });
+    return (
+      <>
+        <img src={poke.img} />
+      </>
+    );
+  };
+
   return matchedPokemon ? (
     <div className="detail">
       <h1>{matchedPokemon.name.english}</h1>
       <h2>ID: {matchedPokemon.id}</h2>
       <div>
+        <SearchPokemon />
         <p>
           <b>Type: </b>
           {matchedPokemon.type}
