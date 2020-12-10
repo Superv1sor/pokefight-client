@@ -1,21 +1,32 @@
 import React, { useState, useEffect } from "react";
-import "./App.css";
 import { Link, Switch, Route, useParams } from "react-router-dom";
+import Spinner from "react-bootstrap/Spinner";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "./App.css";
 
 const PokemonList = () => {
   const [pokemon, setPokemon] = useState([]);
   useEffect(() => {
-    fetch("https://pokefight-api.herokuapp.com/pokemon")
+    // fetch("https://pokefight-api.herokuapp.com/pokemon")
+    fetch("http://localhost:4007/pokemon/")
       .then((res) => res.json())
       .then((res) => setPokemon(res));
   }, []);
-  return (
+  return pokemon ? (
     <>
-      {pokemon.map((p) => (
-        <li>
-          <Link to={`/pokemon/${p.id}`}>{p.name.english}</Link>
-        </li>
-      ))}
+      <ul>
+        {pokemon.map((p) => (
+          <li key={p.id}>
+            <Link to={`/pokemon/${p.id}`}>{p.name.english}</Link>
+          </li>
+        ))}
+        <div className="clear"></div>
+      </ul>
+    </>
+  ) : (
+    <>
+      <h1>Loading...</h1>
+      <Spinner animation="border" variant="light" className="spnr" />
     </>
   );
 };
@@ -27,50 +38,83 @@ const PokemonSingle = ({ pokemon }) => {
     fetch(`https://pokefight-api.herokuapp.com/pokemon/${id}`)
       .then((res) => res.json())
       .then((res) => setMatchedPokemon(res));
-  }, []);
+  }, [id]);
   return matchedPokemon ? (
     <div className="detail">
       <h1>{matchedPokemon.name.english}</h1>
       <h2>ID: {matchedPokemon.id}</h2>
-      <p>
-        <b>Type: </b>
-        {matchedPokemon.type}
-        <br />
-      </p>
-      <p>
-        <b>HP: </b>
-        {matchedPokemon.base.HP}
-      </p>
-      <p>
-        <b>Attack: </b>
-        {matchedPokemon.base.Attack}
-      </p>
-      <p>
-        <b>Defense: </b>
-        {matchedPokemon.base.Defense}
-      </p>
-      <p>
-        <b>Speed: </b>
-        {matchedPokemon.base.Speed}
-      </p>
+      <div>
+        <p>
+          <b>Type: </b>
+          {matchedPokemon.type}
+          <br />
+        </p>
+        <p>
+          <b>HP: </b>
+          {matchedPokemon.base.HP}
+        </p>
+        <p>
+          <b>Attack: </b>
+          {matchedPokemon.base.Attack}
+        </p>
+        <p>
+          <b>Defense: </b>
+          {matchedPokemon.base.Defense}
+        </p>
+        <p>
+          <b>Speed: </b>
+          {matchedPokemon.base.Speed}
+        </p>
+      </div>
     </div>
   ) : (
-    <>loading.....</>
+    <Spinner animation="border" variant="light" />
+  );
+};
+
+const PokemonSingleInfo = ({ pokemon }) => {
+  const { id } = useParams();
+  const { info } = useParams();
+  const [matchedPokemon, setMatchedPokemon] = useState();
+  useEffect(() => {
+    fetch(`https://pokefight-api.herokuapp.com/pokemon/${id}/${info}`)
+      .then((res) => res.json())
+      .then((res) => setMatchedPokemon(res));
+  }, [id, info]);
+  return matchedPokemon ? (
+    <div className="detail">
+      <h1>{matchedPokemon[info]}</h1>
+    </div>
+  ) : (
+    <Spinner animation="border" variant="light" />
   );
 };
 
 export default function App() {
   return (
     <div className="App">
-      <Switch>
-        <Route exact path="/">
-          <PokemonList />
-        </Route>
-        <Route exact path="/pokemon/:id">
-          <PokemonSingle />
-        </Route>
-        <Route exact path="/pokemon/:id/:info"></Route>
-      </Switch>
+      <div className="outdo">
+        <Link to="/">
+          <img
+            className="logo"
+            title="Reset Game"
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/International_Pok%C3%A9mon_logo.svg/2000px-International_Pok%C3%A9mon_logo.svg.png"
+            alt="Pokemon"
+          />
+        </Link>
+        <h1>Pokefight</h1>
+        <Switch>
+          <Route exact path="/">
+            <PokemonList />
+          </Route>
+          <Route exact path="/pokemon/:id">
+            <PokemonSingle />
+          </Route>
+          <Route exact path="/pokemon/:id/:info">
+            <PokemonSingleInfo />
+          </Route>
+        </Switch>
+      </div>
     </div>
   );
 }
