@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, Switch, Route, useParams } from "react-router-dom";
+import Axios from "axios";
 import Spinner from "react-bootstrap/Spinner";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
@@ -34,16 +35,35 @@ const PokemonList = () => {
 const PokemonSingle = ({ pokemon }) => {
   const { id } = useParams();
   const [matchedPokemon, setMatchedPokemon] = useState();
+
   useEffect(() => {
     fetch(`https://pokefight-api.herokuapp.com/pokemon/${id}`)
       .then((res) => res.json())
       .then((res) => setMatchedPokemon(res));
   }, [id]);
+
+  const [poke, setPoke] = useState({ img: "" });
+  const SearchPokemon = () => {
+    Axios.get(
+      `https://pokeapi.co/api/v2/pokemon/${matchedPokemon.name.english.toLowerCase()}`
+    ).then((response) => {
+      setPoke({
+        img: response.data.sprites.front_default,
+      });
+    });
+    return (
+      <>
+        <img src={poke.img} />
+      </>
+    );
+  };
+
   return matchedPokemon ? (
     <div className="detail">
       <h1>{matchedPokemon.name.english}</h1>
       <h2>ID: {matchedPokemon.id}</h2>
       <div>
+        <SearchPokemon />
         <p>
           <b>Type: </b>
           {matchedPokemon.type}
