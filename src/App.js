@@ -9,16 +9,21 @@ const PokemonList = () => {
   const [pokemon, setPokemon] = useState([]);
   useEffect(() => {
     fetch("https://pokefight-api.herokuapp.com/pokemon")
-      // fetch("http://localhost:4007/pokemon/")
       .then((res) => res.json())
       .then((res) => setPokemon(res));
   }, []);
+
   return pokemon ? (
     <>
       <ul>
         {pokemon.map((p) => (
           <li key={p.id}>
-            <Link to={`/pokemon/${p.id}`}>{p.name.english}</Link>
+            <Link to={`/pokemon/${p.id}`}>
+              <img
+                src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${p.id}.png`}
+              />
+              {p.name.english}
+            </Link>
           </li>
         ))}
         <div className="clear"></div>
@@ -32,38 +37,27 @@ const PokemonList = () => {
   );
 };
 
-const PokemonSingle = ({ pokemon }) => {
+const PokemonSingle = () => {
   const { id } = useParams();
   const [matchedPokemon, setMatchedPokemon] = useState();
 
   useEffect(() => {
+    // do something after pokemon is loaded
+  }, [matchedPokemon]);
+  useEffect(() => {
     fetch(`https://pokefight-api.herokuapp.com/pokemon/${id}`)
       .then((res) => res.json())
       .then((res) => setMatchedPokemon(res));
-  }, [id]);
-
-  const [poke, setPoke] = useState({ img: "" });
-  const SearchPokemon = () => {
-    Axios.get(
-      `https://pokeapi.co/api/v2/pokemon/${matchedPokemon.name.english.toLowerCase()}`
-    ).then((response) => {
-      setPoke({
-        img: response.data.sprites.front_default,
-      });
-    });
-    return (
-      <>
-        <img src={poke.img} />
-      </>
-    );
-  };
+  }, []);
 
   return matchedPokemon ? (
     <div className="detail">
       <h1>{matchedPokemon.name.english}</h1>
       <h2>ID: {matchedPokemon.id}</h2>
       <div>
-        <SearchPokemon />
+        <img
+          src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`}
+        />
         <p>
           <b>Type: </b>
           {matchedPokemon.type}
